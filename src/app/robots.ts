@@ -6,10 +6,12 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/api", "/demo"],
+        disallow: ["/admin", "/api", "/demo", "/_next", "/static"],
       },
     ],
-    sitemap: "https://www.babadhesive.com/sitemap.xml",
+    sitemap: [
+      "https://www.babadhesive.com/sitemap.xml",
+    ],
     host: "https://www.babadhesive.com",
   };
 }

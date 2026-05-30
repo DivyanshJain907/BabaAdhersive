@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Script from "next/script";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { Header1 } from "@/components/ui/header";
 import dbConnect from "@/lib/mongodb";
 import { Product } from "@/models/Product";
 import { isCategorySlugMatch, toCategorySlug, toTitleCase } from "@/lib/categorySeo";
+import { breadcrumbSchema, productSchema } from "@/lib/seoSchema";
 
 const siteUrl = "https://www.babadhesive.com";
 
@@ -82,8 +84,8 @@ export async function generateMetadata({
   }
 
   const productCount = products.length;
-  const title = `${displayCategory} Adhesive Supplier in Moradabad | ${productCount}+ Products`;
-  const description = `Buy ${displayCategory} adhesive products in Moradabad from Baba Adhesive. Professional adhesive solutions for construction, furniture, and industrial applications.`;
+  const title = `${displayCategory} Adhesive Supplier in Moradabad | ${productCount}+ Best Quality Products | Baba Adhesive`;
+  const description = `Buy premium ${displayCategory} adhesive products in Moradabad from Baba Adhesive. ${productCount}+ ${displayCategory} options for construction, furniture, and industrial applications. Fast delivery & competitive pricing. Call +91-863-043-4973`;
   const canonicalPath = `/products/category/${resolvedSlug}`;
 
   return {
@@ -92,10 +94,22 @@ export async function generateMetadata({
     alternates: {
       canonical: canonicalPath,
     },
+    keywords: [
+      `${displayCategory} adhesive Moradabad`,
+      `${displayCategory} supplier in Moradabad`,
+      `best ${displayCategory} adhesive`,
+      `${displayCategory} glue`,
+      `${displayCategory} manufacturer`,
+      `${displayCategory} Uttar Pradesh`,
+      `${displayCategory} wholesale`,
+      `${displayCategory} dealer`,
+      "industrial adhesive Moradabad",
+      "professional adhesive supplier",
+    ],
     openGraph: {
       title,
       description,
-      url: `${siteUrl}${canonicalPath}`,
+      url: `https://www.babadhesive.com${canonicalPath}`,
       type: "website",
       siteName: "Baba Adhesive",
       images: ["/logo.png"],
@@ -106,12 +120,6 @@ export async function generateMetadata({
       description,
       images: ["/logo.png"],
     },
-    keywords: [
-      `${displayCategory} supplier in Moradabad`,
-      `${displayCategory} adhesive Moradabad`,
-      "adhesive supplier in India",
-      "industrial adhesive manufacturer",
-    ],
   };
 }
 
@@ -128,8 +136,20 @@ export default async function ProductCategoryPage({
     notFound();
   }
 
+  const breadcrumbs = breadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: "Products", url: "/products" },
+    { name: displayCategory, url: `/products/category/${slug}` },
+  ]);
+
   return (
     <main className="bg-white">
+      <Script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbs),
+        }}
+      />
       <Header1 />
 
       <section className="relative w-full py-10 md:py-20 bg-gradient-to-r from-gray-700 via-blue-600 to-gray-700 text-white px-4 -mt-16">

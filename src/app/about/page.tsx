@@ -1,12 +1,31 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Script from 'next/script';
 import { Header1 } from '@/components/ui/header';
 import Footer from '@/components/Footer';
+
+const aboutPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About Baba Adhesive",
+  "description": "Baba Adhesive is a premium industrial adhesive manufacturer in Moradabad, specializing in high-quality adhesive solutions for construction, furniture, and industrial applications.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Baba Adhesive",
+    "logo": "https://www.babadhesive.com/logo.png"
+  }
+};
 
 export default function AboutPage() {
   return (
     <main className="bg-white">
+      <Script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(aboutPageSchema),
+        }}
+      />
       <Header1 />
 
       {/* Hero Section */}
