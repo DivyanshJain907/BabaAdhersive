@@ -7,6 +7,7 @@ import {
   ReactNode,
   TouchEvent,
   WheelEvent,
+  useCallback,
 } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -37,10 +38,14 @@ const ScrollExpandMedia = ({
   const [scrollProgress, setScrollProgress] = useState<number>(0);
   const [showContent, setShowContent] = useState<boolean>(false);
   const [mediaFullyExpanded, setMediaFullyExpanded] = useState<boolean>(false);
-  const [touchStartY, setTouchStartY] = useState<number>(0);
   const [isMobileState, setIsMobileState] = useState<boolean>(false);
 
   const sectionRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const touchStartYRef = useRef<number>(0);
+  const scrollProgressRef = useRef<number>(0);
+  const mediaFullyExpandedRef = useRef<boolean>(false);
+  const lastUpdateTimeRef = useRef<number>(0);
 
   // Check if running on client
   const [isClient, setIsClient] = useState(false);
@@ -52,76 +57,83 @@ const ScrollExpandMedia = ({
   useEffect(() => {
     if (!isClient) return;
     setScrollProgress(0);
+    scrollProgressRef.current = 0;
     setShowContent(false);
     setMediaFullyExpanded(false);
+    mediaFullyExpandedRef.current = false;
   }, [mediaType, isClient]);
+
+  // Throttled scroll handler
+  const updateScrollProgress = useCallback((newProgress: number) => {
+    const now = Date.now();
+    // Throttle to ~60fps (16ms)
+    if (now - lastUpdateTimeRef.current < 16) return;
+    
+    lastUpdateTimeRef.current = now;
+    scrollProgressRef.current = newProgress;
+    setScrollProgress(newProgress);
+
+    if (newProgress >= 1) {
+      mediaFullyExpandedRef.current = true;
+      setMediaFullyExpanded(true);
+      setShowContent(true);
+    } else if (newProgress < 0.75) {
+      setShowContent(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!isClient) return;
 
     const handleWheel = (e: WheelEvent) => {
-      if (mediaFullyExpanded && e.deltaY < 0 && window.scrollY <= 5) {
+      if (mediaFullyExpandedRef.current && e.deltaY < 0 && window.scrollY <= 5) {
+        mediaFullyExpandedRef.current = false;
         setMediaFullyExpanded(false);
         e.preventDefault();
-      } else if (!mediaFullyExpanded) {
+      } else if (!mediaFullyExpandedRef.current) {
         e.preventDefault();
         const scrollDelta = e.deltaY * 0.0009;
         const newProgress = Math.min(
-          Math.max(scrollProgress + scrollDelta, 0),
+          Math.max(scrollProgressRef.current + scrollDelta, 0),
           1
         );
-        setScrollProgress(newProgress);
-
-        if (newProgress >= 1) {
-          setMediaFullyExpanded(true);
-          setShowContent(true);
-        } else if (newProgress < 0.75) {
-          setShowContent(false);
-        }
+        updateScrollProgress(newProgress);
       }
     };
 
     const handleTouchStart = (e: TouchEvent) => {
-      setTouchStartY(e.touches[0].clientY);
+      touchStartYRef.current = e.touches[0].clientY;
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (!touchStartY) return;
+      if (!touchStartYRef.current) return;
 
       const touchY = e.touches[0].clientY;
-      const deltaY = touchStartY - touchY;
+      const deltaY = touchStartYRef.current - touchY;
 
-      if (mediaFullyExpanded && deltaY < -20 && window.scrollY <= 5) {
+      if (mediaFullyExpandedRef.current && deltaY < -20 && window.scrollY <= 5) {
+        mediaFullyExpandedRef.current = false;
         setMediaFullyExpanded(false);
         e.preventDefault();
-      } else if (!mediaFullyExpanded) {
+      } else if (!mediaFullyExpandedRef.current) {
         e.preventDefault();
-        // Increase sensitivity for mobile, especially when scrolling back
-        const scrollFactor = deltaY < 0 ? 0.008 : 0.005; // Higher sensitivity for scrolling back
+        const scrollFactor = deltaY < 0 ? 0.008 : 0.005;
         const scrollDelta = deltaY * scrollFactor;
         const newProgress = Math.min(
-          Math.max(scrollProgress + scrollDelta, 0),
+          Math.max(scrollProgressRef.current + scrollDelta, 0),
           1
         );
-        setScrollProgress(newProgress);
-
-        if (newProgress >= 1) {
-          setMediaFullyExpanded(true);
-          setShowContent(true);
-        } else if (newProgress < 0.75) {
-          setShowContent(false);
-        }
-
-        setTouchStartY(touchY);
+        updateScrollProgress(newProgress);
+        touchStartYRef.current = touchY;
       }
     };
 
     const handleTouchEnd = (): void => {
-      setTouchStartY(0);
+      touchStartYRef.current = 0;
     };
 
     const handleScroll = (): void => {
-      if (!mediaFullyExpanded) {
+      if (!mediaFullyExpandedRef.current) {
         window.scrollTo(0, 0);
       }
     };
@@ -158,7 +170,7 @@ const ScrollExpandMedia = ({
       );
       window.removeEventListener('touchend', handleTouchEnd as EventListener);
     };
-  }, [scrollProgress, mediaFullyExpanded, touchStartY, isClient]);
+  }, [isClient, updateScrollProgress]);
 
   useEffect(() => {
     if (!isClient) return;
@@ -172,6 +184,39 @@ const ScrollExpandMedia = ({
 
     return () => window.removeEventListener('resize', checkIfMobile);
   }, [isClient]);
+
+  // Ensure video plays
+  useEffect(() => {
+    if (!videoRef.current || mediaType !== 'video' || mediaSrc.includes('youtube.com')) return;
+
+    const video = videoRef.current;
+    const playPromise = video.play();
+    
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Fallback: try playing again with timeout
+        setTimeout(() => {
+          video.play().catch(() => {
+            console.warn('Video autoplay failed');
+          });
+        }, 500);
+      });
+    }
+
+    // Handle visibility change
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        video.pause();
+      } else {
+        video.play().catch(() => {});
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [mediaType, mediaSrc, isClient]);
 
   const mediaWidth = 300 + scrollProgress * (isMobileState ? 650 : 1250);
   const mediaHeight = 400 + scrollProgress * (isMobileState ? 200 : 400);
@@ -255,6 +300,7 @@ const ScrollExpandMedia = ({
                   ) : (
                     <div className='relative w-full h-full pointer-events-none'>
                       <video
+                        ref={videoRef}
                         src={mediaSrc}
                         poster={posterSrc}
                         autoPlay
@@ -266,6 +312,12 @@ const ScrollExpandMedia = ({
                         controls={false}
                         disablePictureInPicture
                         disableRemotePlayback
+                        onLoadedMetadata={() => {
+                          videoRef.current?.play().catch(() => {});
+                        }}
+                        onError={() => {
+                          console.warn('Video failed to load');
+                        }}
                       />
                       <div
                         className='absolute inset-0 z-10'
@@ -299,19 +351,25 @@ const ScrollExpandMedia = ({
                   </div>
                 )}
 
-                <div className='flex flex-col items-center text-center relative z-10 mt-4 transition-none'>
+                <div className='flex flex-col items-center text-center relative z-10 mt-2 md:mt-4 transition-none px-4'>
                   {date && (
                     <p
-                      className='text-2xl text-blue-200'
-                      style={{ transform: `translateX(-${textTranslateX}vw)` }}
+                      className='text-lg md:text-2xl font-semibold text-white drop-shadow-lg'
+                      style={{ 
+                        transform: `translateX(-${textTranslateX}vw)`,
+                        textShadow: '0 4px 12px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.6)'
+                      }}
                     >
                       {date}
                     </p>
                   )}
                   {scrollToExpand && (
                     <p
-                      className='text-blue-200 font-medium text-center'
-                      style={{ transform: `translateX(${textTranslateX}vw)` }}
+                      className='text-xs md:text-sm lg:text-base font-semibold text-white drop-shadow-lg mt-2 md:mt-3'
+                      style={{ 
+                        transform: `translateX(${textTranslateX}vw)`,
+                        textShadow: '0 4px 12px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.6)'
+                      }}
                     >
                       {scrollToExpand}
                     </p>
@@ -320,19 +378,25 @@ const ScrollExpandMedia = ({
               </div>
 
               <div
-                className={`flex items-center justify-center text-center gap-4 w-full relative z-10 transition-none flex-col ${
-                  textBlend ? 'mix-blend-difference' : 'mix-blend-normal'
+                className={`flex items-center justify-center text-center gap-2 md:gap-4 w-full relative z-10 transition-none flex-col px-3 md:px-6 ${
+                  textBlend ? 'mix-blend-normal' : 'mix-blend-normal'
                 }`}
               >
                 <motion.h2
-                  className='text-4xl md:text-5xl lg:text-6xl font-bold text-blue-200 transition-none'
-                  style={{ transform: `translateX(-${textTranslateX}vw)` }}
+                  className='text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white transition-none drop-shadow-xl leading-tight md:leading-normal'
+                  style={{ 
+                    transform: `translateX(-${textTranslateX}vw)`,
+                    textShadow: '0 6px 20px rgba(0, 0, 0, 0.9), 0 3px 8px rgba(0, 0, 0, 0.7)'
+                  }}
                 >
                   {firstWord}
                 </motion.h2>
                 <motion.h2
-                  className='text-4xl md:text-5xl lg:text-6xl font-bold text-center text-blue-200 transition-none'
-                  style={{ transform: `translateX(${textTranslateX}vw)` }}
+                  className='text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-center text-white transition-none drop-shadow-xl leading-tight md:leading-normal'
+                  style={{ 
+                    transform: `translateX(${textTranslateX}vw)`,
+                    textShadow: '0 6px 20px rgba(0, 0, 0, 0.9), 0 3px 8px rgba(0, 0, 0, 0.7)'
+                  }}
                 >
                   {restOfTitle}
                 </motion.h2>

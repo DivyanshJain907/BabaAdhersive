@@ -24,11 +24,11 @@ interface MediaContentCollection {
 
 const sampleMediaContent: MediaContentCollection = {
   video: {
-    src: 'https://images.unsplash.com/photo-1511884642898-4c92249e20b6?q=80&w=1280&auto=format&fit=crop',
+    src: '/mix.mp4',
     poster:
       'https://images.unsplash.com/photo-1511884642898-4c92249e20b6?q=80&w=1280&auto=format&fit=crop',
     background:
-      'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?q=80&w=1920&auto=format&fit=crop',
+      '/pannel.jpg',
     title: 'Baba Adhesive: WPC, PVC & Panel Solutions',
     date: 'Premium Bonding Technology',
     scrollToExpand: 'Scroll to Explore Our Complete Product Range',
@@ -42,7 +42,7 @@ const sampleMediaContent: MediaContentCollection = {
   image: {
     src: 'https://images.unsplash.com/photo-1556075798-4825dfaaf498?q=80&w=1280&auto=format&fit=crop',
     background:
-      'https://images.unsplash.com/photo-1581092162562-40038f5c3406?q=80&w=1920&auto=format&fit=crop',
+      '/pannel.jpg',
     title: 'Specialized Industrial Adhesive Range',
     date: 'WPC • PVC • Panel Glue+',
     scrollToExpand: 'Scroll to Discover Our Products',
