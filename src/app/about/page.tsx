@@ -21,6 +21,7 @@ export default function AboutPage() {
   return (
     <main className="bg-white">
       <Script
+        id="about-page-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(aboutPageSchema),
