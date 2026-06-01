@@ -115,6 +115,7 @@ export default function FAQPage() {
   return (
     <main className="bg-white">
       <Script
+        id="faq-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(faqSchema),
@@ -164,7 +165,7 @@ export default function FAQPage() {
             whileInView={{ opacity: 1, y: 0 }}
             className="mt-12 md:mt-16 p-8 bg-blue-50 rounded-lg border-2 border-blue-200 text-center"
           >
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">Didn't find your answer?</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">Didn&apos;t find your answer?</h2>
             <p className="text-gray-700 mb-6">Contact our technical team directly for personalized support</p>
             <div className="flex gap-4 justify-center flex-wrap">
               <a

@@ -145,6 +145,7 @@ export default async function ProductCategoryPage({
   return (
     <main className="bg-white">
       <Script
+        id="breadcrumb-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(breadcrumbs),
