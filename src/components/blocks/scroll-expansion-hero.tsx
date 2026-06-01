@@ -63,11 +63,11 @@ const ScrollExpandMedia = ({
     mediaFullyExpandedRef.current = false;
   }, [mediaType, isClient]);
 
-  // Throttled scroll handler
+  // Throttled scroll handler with smoother updates
   const updateScrollProgress = useCallback((newProgress: number) => {
     const now = Date.now();
-    // Throttle to ~60fps (16ms)
-    if (now - lastUpdateTimeRef.current < 16) return;
+    // Throttle to ~120fps (8ms) for smoother animation
+    if (now - lastUpdateTimeRef.current < 8) return;
     
     lastUpdateTimeRef.current = now;
     scrollProgressRef.current = newProgress;
@@ -92,7 +92,8 @@ const ScrollExpandMedia = ({
         e.preventDefault();
       } else if (!mediaFullyExpandedRef.current) {
         e.preventDefault();
-        const scrollDelta = e.deltaY * 0.0009;
+        // Smoother scroll sensitivity
+        const scrollDelta = e.deltaY * 0.001;
         const newProgress = Math.min(
           Math.max(scrollProgressRef.current + scrollDelta, 0),
           1
@@ -117,7 +118,8 @@ const ScrollExpandMedia = ({
         e.preventDefault();
       } else if (!mediaFullyExpandedRef.current) {
         e.preventDefault();
-        const scrollFactor = deltaY < 0 ? 0.008 : 0.005;
+        // Smoother touch sensitivity
+        const scrollFactor = 0.006;
         const scrollDelta = deltaY * scrollFactor;
         const newProgress = Math.min(
           Math.max(scrollProgressRef.current + scrollDelta, 0),
@@ -222,8 +224,20 @@ const ScrollExpandMedia = ({
   const mediaHeight = 400 + scrollProgress * (isMobileState ? 200 : 400);
   const textTranslateX = scrollProgress * (isMobileState ? 180 : 150);
 
-  const firstWord = title ? title.split(' ')[0] : '';
-  const restOfTitle = title ? title.split(' ').slice(1).join(' ') : '';
+  // Check if title contains newline
+  let firstWord = '';
+  let restOfTitle = '';
+  
+  if (title) {
+    if (title.includes('\n')) {
+      const parts = title.split('\n');
+      firstWord = parts[0];
+      restOfTitle = parts.slice(1).join('\n');
+    } else {
+      firstWord = title.split(' ')[0];
+      restOfTitle = title.split(' ').slice(1).join(' ');
+    }
+  }
 
   return (
     <div
@@ -236,7 +250,7 @@ const ScrollExpandMedia = ({
             className='absolute inset-0 z-0 h-full'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 - scrollProgress }}
-            transition={{ duration: 0.1 }}
+            transition={{ duration: 0 }}
           >
             <Image
               src={bgImageSrc}
@@ -263,6 +277,7 @@ const ScrollExpandMedia = ({
                   maxWidth: '95vw',
                   maxHeight: '85vh',
                   boxShadow: '0px 0px 50px rgba(0, 0, 0, 0.3)',
+                  willChange: 'width, height, box-shadow',
                 }}
               >
                 {mediaType === 'video' ? (
@@ -328,7 +343,7 @@ const ScrollExpandMedia = ({
                         className='absolute inset-0 bg-black/30 rounded-xl'
                         initial={{ opacity: 0.7 }}
                         animate={{ opacity: 0.5 - scrollProgress * 0.3 }}
-                        transition={{ duration: 0.2 }}
+                        transition={{ duration: 0 }}
                       />
                     </div>
                   )
@@ -346,7 +361,7 @@ const ScrollExpandMedia = ({
                       className='absolute inset-0 bg-black/50 rounded-xl'
                       initial={{ opacity: 0.7 }}
                       animate={{ opacity: 0.7 - scrollProgress * 0.3 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: 0 }}
                     />
                   </div>
                 )}
@@ -386,7 +401,8 @@ const ScrollExpandMedia = ({
                   className='text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white transition-none drop-shadow-xl leading-tight md:leading-normal'
                   style={{ 
                     transform: `translateX(-${textTranslateX}vw)`,
-                    textShadow: '0 6px 20px rgba(0, 0, 0, 0.9), 0 3px 8px rgba(0, 0, 0, 0.7)'
+                    textShadow: '0 6px 20px rgba(0, 0, 0, 0.9), 0 3px 8px rgba(0, 0, 0, 0.7)',
+                    willChange: 'transform'
                   }}
                 >
                   {firstWord}
@@ -395,7 +411,9 @@ const ScrollExpandMedia = ({
                   className='text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-center text-white transition-none drop-shadow-xl leading-tight md:leading-normal'
                   style={{ 
                     transform: `translateX(${textTranslateX}vw)`,
-                    textShadow: '0 6px 20px rgba(0, 0, 0, 0.9), 0 3px 8px rgba(0, 0, 0, 0.7)'
+                    textShadow: '0 6px 20px rgba(0, 0, 0, 0.9), 0 3px 8px rgba(0, 0, 0, 0.7)',
+                    whiteSpace: 'pre-wrap',
+                    willChange: 'transform'
                   }}
                 >
                   {restOfTitle}
@@ -407,7 +425,7 @@ const ScrollExpandMedia = ({
               className='flex flex-col w-full px-8 py-10 md:px-16 lg:py-20'
               initial={{ opacity: 0 }}
               animate={{ opacity: showContent ? 1 : 0 }}
-              transition={{ duration: 0.7 }}
+              transition={{ duration: 0.5 }}
             >
               {children}
             </motion.section>

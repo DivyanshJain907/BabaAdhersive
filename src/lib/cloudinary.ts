@@ -19,11 +19,12 @@ export async function uploadToCloudinary(file: File, resourceType: 'video' | 'im
       }
     );
 
+    const data = await response.json();
+
     if (!response.ok) {
-      throw new Error('Upload failed');
+      throw new Error(data.error?.message || `Upload failed: ${response.statusText}`);
     }
 
-    const data = await response.json();
     return data.secure_url;
   } catch (error) {
     console.error('Cloudinary upload error:', error);

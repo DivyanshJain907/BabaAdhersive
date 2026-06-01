@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import NextImage from 'next/image';
 import { motion } from 'framer-motion';
+import ImageUpload from '@/components/ImageUpload';
+import VideoUpload from '@/components/VideoUpload';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -63,7 +66,7 @@ export default function AdminDashboard() {
       {/* Navigation Tabs */}
       <div className="border-b border-gray-200 sticky top-16 md:top-20 z-30 bg-white/95 backdrop-blur overflow-x-auto">
         <div className="max-w-7xl mx-auto px-4 flex">
-          {['products', 'timeline', 'contacts', 'settings'].map((tab) => (
+          {['products', 'gallery', 'timeline', 'contacts', 'settings'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -82,6 +85,7 @@ export default function AdminDashboard() {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         {activeTab === 'products' && <ProductsTab />}
+        {activeTab === 'gallery' && <GalleryTab />}
         {activeTab === 'timeline' && <TimelineTab />}
         {activeTab === 'contacts' && <ContactsTab />}
         {activeTab === 'settings' && <SettingsTab />}
@@ -97,12 +101,26 @@ function ProductsTab() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [formData, setFormData] = useState({
+  
+  interface FormDataType {
+    name: string;
+    description: string;
+    category: string;
+    image: string;
+    images: string[];
+    video: string;
+    videos: string[];
+    featured: boolean;
+  }
+
+  const [formData, setFormData] = useState<FormDataType>({
     name: '',
     description: '',
     category: '',
     image: '',
+    images: [],
     video: '',
+    videos: [],
     featured: false,
   });
 
@@ -128,11 +146,18 @@ function ProductsTab() {
     e.preventDefault();
     const token = localStorage.getItem('adminToken');
 
-    console.log('Submitting product with featured value:', formData.featured);
+    console.log('Submitting product with formData:', formData);
 
     try {
       const url = editingId ? `/api/products/${editingId}` : '/api/products';
       const method = editingId ? 'PUT' : 'POST';
+
+      const requestBody = {
+        ...formData,
+        featured: formData.featured === true ? true : false,
+      };
+
+      console.log('Request body being sent:', requestBody);
 
       const response = await fetch(url, {
         method,
@@ -140,11 +165,11 @@ function ProductsTab() {
           'Content-Type': 'application/json',
           'x-admin-secret': token || '',
         },
-        body: JSON.stringify({
-          ...formData,
-          featured: formData.featured === true ? true : false,
-        }),
+        body: JSON.stringify(requestBody),
       });
+
+      const responseData = await response.json();
+      console.log('Response from server:', responseData);
 
       if (response.ok) {
         setFormData({
@@ -152,16 +177,17 @@ function ProductsTab() {
           description: '',
           category: '',
           image: '',
+          images: [],
           video: '',
+          videos: [],
           featured: false,
         });
         setEditingId(null);
         setShowForm(false);
         fetchProducts();
       } else {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.error || 'Failed to save product'}`);
-        console.error('Error response:', errorData);
+        alert(`Error: ${responseData.error || 'Failed to save product'}`);
+        console.error('Error response:', responseData);
       }
     } catch (error) {
       console.error('Error saving product:', error);
@@ -192,7 +218,9 @@ function ProductsTab() {
       description: product.description,
       category: product.category,
       image: product.image || '',
+      images: product.images || [],
       video: product.video || '',
+      videos: product.videos || [],
       featured: product.featured || false,
     });
     setEditingId(product._id);
@@ -231,7 +259,9 @@ function ProductsTab() {
                 description: '',
                 category: '',
                 image: '',
+                images: [],
                 video: '',
+                videos: [],
                 featured: false,
               });
             } else {
@@ -279,20 +309,14 @@ function ProductsTab() {
               rows={3}
             />
 
-            <input
-              type="text"
-              placeholder="Image URL"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              className="col-span-2 px-4 py-3 bg-white text-darkGray rounded border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition"
+            <ImageUpload 
+              currentImages={formData.images}
+              onImagesChange={(images) => setFormData({ ...formData, images })}
             />
 
-            <input
-              type="text"
-              placeholder="Video URL (Cloudinary)"
-              value={formData.video}
-              onChange={(e) => setFormData({ ...formData, video: e.target.value })}
-              className="col-span-2 px-4 py-3 bg-white text-darkGray rounded border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition"
+            <VideoUpload 
+              currentVideos={formData.videos}
+              onVideosChange={(videos) => setFormData({ ...formData, videos })}
             />
 
             <label className="flex items-center gap-2 col-span-2">
@@ -883,6 +907,159 @@ function SettingsTab() {
             className="bg-blue-600 text-white px-6 py-3 rounded font-bold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+function GalleryTab() {
+  const [gallery, setGallery] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [galleryTitle, setGalleryTitle] = useState('');
+  const [galleryDescription, setGalleryDescription] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    fetchGallery();
+  }, []);
+
+  const fetchGallery = async () => {
+    try {
+      const response = await fetch('/api/gallery');
+      if (response.ok) {
+        const data = await response.json();
+        setGallery(data);
+        setGalleryImages(data.images || []);
+        setGalleryTitle(data.title || 'Gallery');
+        setGalleryDescription(data.description || '');
+      }
+    } catch (error) {
+      console.error('Error fetching gallery:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveGallery = async () => {
+    const token = localStorage.getItem('adminToken');
+    setSaving(true);
+
+    try {
+      const response = await fetch('/api/gallery', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-secret': token || '',
+        },
+        body: JSON.stringify({
+          title: galleryTitle,
+          description: galleryDescription,
+          images: galleryImages,
+        }),
+      });
+
+      if (response.ok) {
+        const updated = await response.json();
+        setGallery(updated);
+        alert('Gallery updated successfully!');
+      } else {
+        alert('Failed to save gallery');
+      }
+    } catch (error) {
+      console.error('Error saving gallery:', error);
+      alert('Error saving gallery');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setGalleryImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleAddImages = (newImages: string[]) => {
+    setGalleryImages((prev) => [...prev, ...newImages]);
+  };
+
+  if (loading) {
+    return <div className="text-center py-20 text-gray-600">Loading gallery...</div>;
+  }
+
+  return (
+    <div>
+      <h2 className="text-3xl font-bold text-black mb-8">Gallery Management</h2>
+
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-lg p-8 mb-8 border border-gray-200 shadow-lg"
+      >
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Gallery Title</label>
+            <input
+              type="text"
+              value={galleryTitle}
+              onChange={(e) => setGalleryTitle(e.target.value)}
+              className="w-full px-4 py-3 bg-white text-darkGray rounded border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Gallery Description</label>
+            <textarea
+              value={galleryDescription}
+              onChange={(e) => setGalleryDescription(e.target.value)}
+              className="w-full px-4 py-3 bg-white text-darkGray rounded border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition resize-none"
+              rows={2}
+              placeholder="Describe your gallery..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-4">Gallery Images (Up to 3)</label>
+            <ImageUpload
+              currentImages={galleryImages}
+              onImagesChange={handleAddImages}
+            />
+          </div>
+
+          {galleryImages.length > 0 && (
+            <div>
+              <h3 className="text-lg font-bold text-gray-800 mb-4">Current Images ({galleryImages.length}/3)</h3>
+              <div className="grid grid-cols-3 gap-4">
+                {galleryImages.map((image, index) => (
+                  <div key={index} className="relative group">
+                    <div className="relative w-full h-32 bg-gray-200 rounded overflow-hidden">
+                      <NextImage
+                        src={image}
+                        alt={`Gallery image ${index + 1}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(index)}
+                      className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition font-bold text-sm"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <button
+            onClick={handleSaveGallery}
+            disabled={saving}
+            className="w-full bg-blue-600 text-white py-3 rounded font-bold hover:bg-blue-700 transition disabled:bg-gray-400"
+          >
+            {saving ? 'Saving...' : 'Save Gallery'}
           </button>
         </div>
       </motion.div>

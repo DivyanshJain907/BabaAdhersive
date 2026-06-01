@@ -12,6 +12,9 @@ interface ProductCardProps {
   price?: number;
   category: string;
   image?: string;
+  images?: string[];
+  video?: string;
+  videos?: string[];
   description: string;
   featured?: boolean;
 }
@@ -21,10 +24,19 @@ export default function ProductCard({
   price,
   category,
   image,
+  images,
+  video,
+  videos,
   description,
   featured,
 }: ProductCardProps) {
   const [showModal, setShowModal] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Get display images - use images array if available, fallback to single image
+  const displayImages = (images && images.length > 0) ? images : (image ? [image] : []);
+  // Get display videos - use videos array if available, fallback to single video
+  const displayVideos = (videos && videos.length > 0) ? videos : (video ? [video] : []);
 
   const handleWhatsAppInquiry = () => {
     const phoneNumber = '918630434973';
@@ -52,14 +64,34 @@ export default function ProductCard({
       >
         {/* Image Container */}
         <div className="relative h-40 md:h-56 lg:h-64 bg-gray-200 overflow-hidden">
-          {image && (
-            <Image
-              src={image}
-              alt={name}
-              fill
-              loading="lazy"
-              className="object-cover group-hover:scale-110 transition duration-300"
-            />
+          {displayImages.length > 0 && (
+            <>
+              <Image
+                src={displayImages[currentImageIndex]}
+                alt={`${name} - Image ${currentImageIndex + 1}`}
+                fill
+                loading="lazy"
+                className="object-cover group-hover:scale-110 transition duration-300"
+              />
+              
+              {/* Image Navigation Dots */}
+              {displayImages.length > 1 && (
+                <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1 z-10">
+                  {displayImages.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentImageIndex(index);
+                      }}
+                      className={`w-2 h-2 rounded-full transition ${
+                        index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
           )}
           {featured && (
             <div className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
@@ -113,14 +145,48 @@ export default function ProductCard({
               <p className="text-blue-600 font-semibold text-sm uppercase">{category}</p>
             </div>
 
-            {image && (
-              <div className="relative w-full h-48 mb-6 rounded-lg overflow-hidden">
+            {/* Images Carousel */}
+            {displayImages.length > 0 && (
+              <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden bg-gray-200">
                 <Image
-                  src={image}
+                  src={displayImages[currentImageIndex]}
                   alt={name}
                   fill
                   className="object-cover"
                 />
+                {displayImages.length > 1 && (
+                  <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
+                    {displayImages.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentImageIndex(index);
+                        }}
+                        className={`w-2 h-2 rounded-full transition ${
+                          index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Videos */}
+            {displayVideos.length > 0 && (
+              <div className="mb-4 space-y-2">
+                {displayVideos.map((videoUrl, index) => (
+                  <video
+                    key={index}
+                    className="w-full h-48 rounded-lg bg-black"
+                    controls
+                    controlsList="nodownload"
+                  >
+                    <source src={videoUrl} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                ))}
               </div>
             )}
 
