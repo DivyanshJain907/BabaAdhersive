@@ -13,12 +13,12 @@ export const metadata: Metadata = {
     "industrial adhesive FAQ"
   ],
   alternates: {
-    canonical: "https://www.babadhesive.com/faq",
+    canonical: "https://www.babaadhesive.in/faq",
   },
   openGraph: {
     title: "FAQs - Baba Adhesive",
     description: "Frequently asked questions about Baba Adhesive products and applications",
-    url: "https://www.babadhesive.com/faq",
+    url: "https://www.babaadhesive.in/faq",
     type: "website",
   }
 };

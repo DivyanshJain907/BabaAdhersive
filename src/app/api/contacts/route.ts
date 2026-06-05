@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     if (resend) {
       try {
         await resend.emails.send({
-          from: 'noreply@babadhesive.com',
+          from: 'noreply@babaadhesive.in',
           to: process.env.CONTACT_EMAIL || 'suneja053@gmail.com',
           subject: `New Contact Message from ${body.name}`,
           html: `

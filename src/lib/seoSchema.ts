@@ -4,8 +4,8 @@ export const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "Baba Adhesive",
-  "url": "https://www.babadhesive.com",
-  "logo": "https://www.babadhesive.com/logo.png",
+  "url": "https://www.babaadhesive.in",
+  "logo": "https://www.babaadhesive.in/logo.png",
   "description": "Premium adhesive manufacturer in Moradabad specializing in panel fixing, furniture, and industrial adhesives",
   "sameAs": [
     "https://www.facebook.com/babadhesive",
@@ -16,7 +16,7 @@ export const organizationSchema = {
     "@type": "ContactPoint",
     "contactType": "Sales",
     "telephone": "+91-863-043-4973",
-    "email": "info@babadhesive.com"
+    "email": "suneja053@gmail.com"
   }
 };
 
@@ -24,7 +24,7 @@ export const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "name": "Baba Adhesive",
-  "image": "https://www.babadhesive.com/logo.png",
+  "image": "https://www.babaadhesive.in/logo.png",
   "description": "Premium Adhesive Supplier in Moradabad - Panel Fixing Adhesive, Furniture Adhesive, Industrial Glue",
   "address": {
     "@type": "PostalAddress",
@@ -39,7 +39,7 @@ export const localBusinessSchema = {
     "latitude": "28.8385",
     "longitude": "77.7064"
   },
-  "url": "https://www.babadhesive.com",
+  "url": "https://www.babaadhesive.in",
   "telephone": "+91-863-043-4973",
   "priceRange": "₹500-₹10000",
   "areaServed": [
@@ -66,7 +66,7 @@ export const breadcrumbSchema = (items: Array<{ name: string; url: string }>) =>
     "@type": "ListItem",
     "position": index + 1,
     "name": item.name,
-    "item": `https://www.babadhesive.com${item.url}`
+    "item": `https://www.babaadhesive.in${item.url}`
   }))
 });
 
@@ -94,7 +94,7 @@ export const productSchema = (product: {
   "@type": "Product",
   "name": product.name,
   "description": product.description,
-  "image": product.image || "https://www.babadhesive.com/logo.png",
+  "image": product.image || "https://www.babaadhesive.in/logo.png",
   "category": product.category,
   "brand": {
     "@type": "Brand",
@@ -102,7 +102,7 @@ export const productSchema = (product: {
   },
   "offers": {
     "@type": "Offer",
-    "url": `https://www.babadhesive.com/products`,
+    "url": `https://www.babaadhesive.in/products`,
     "priceCurrency": "INR",
     "price": product.price.toString(),
     "availability": "https://schema.org/InStock"

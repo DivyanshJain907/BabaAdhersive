@@ -10,8 +10,8 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: [
-      "https://www.babadhesive.com/sitemap.xml",
+      "https://www.babaadhesive.in/sitemap.xml",
     ],
-    host: "https://www.babadhesive.com",
+    host: "https://www.babaadhesive.in",
   };
 }

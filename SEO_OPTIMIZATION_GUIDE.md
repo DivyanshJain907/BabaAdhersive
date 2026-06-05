@@ -259,9 +259,9 @@ After deploying these changes, monitor these in Google Search Console:
 ## 📞 Support & Questions
 
 For implementation questions or technical issues:
-- Email: info@babadhesive.com
+- Email: suneja053@gmail.com
 - Phone: +91-863-043-4973
-- Website: www.babadhesive.com
+- Website: www.babaadhesive.in
 
 ---
 

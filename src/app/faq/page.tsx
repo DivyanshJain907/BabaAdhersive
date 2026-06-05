@@ -71,7 +71,7 @@ const faqSchema = {
       "name": "Do you provide technical support?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes, our technical team is available to help with product selection, application guidance, and troubleshooting. Contact us at info@babadhesive.com or call +91-863-043-4973."
+        "text": "Yes, our technical team is available to help with product selection, application guidance, and troubleshooting. Contact us at suneja053@gmail.com or call +91-863-043-4973."
       }
     }
   ]

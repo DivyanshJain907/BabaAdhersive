@@ -4,7 +4,7 @@ import { Product } from '@/models/Product';
 import { toCategorySlug } from '@/lib/categorySeo';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://www.babadhesive.com';
+  const baseUrl = 'https://www.babaadhesive.in';
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {

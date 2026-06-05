@@ -10,7 +10,7 @@ import { Product } from "@/models/Product";
 import { isCategorySlugMatch, toCategorySlug, toTitleCase } from "@/lib/categorySeo";
 import { breadcrumbSchema, productSchema } from "@/lib/seoSchema";
 
-const siteUrl = "https://www.babadhesive.com";
+const siteUrl = "https://www.babaadhesive.in";
 
 interface ProductItem {
   _id: string;
@@ -109,7 +109,7 @@ export async function generateMetadata({
     openGraph: {
       title,
       description,
-      url: `https://www.babadhesive.com${canonicalPath}`,
+      url: `https://www.babaadhesive.in${canonicalPath}`,
       type: "website",
       siteName: "Baba Adhesive",
       images: ["/logo.png"],

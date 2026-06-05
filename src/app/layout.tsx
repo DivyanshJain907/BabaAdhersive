@@ -3,7 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
-const siteUrl = "https://www.babadhesive.com";
+const siteUrl = "https://www.babaadhesive.in";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

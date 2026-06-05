@@ -211,7 +211,7 @@ npm start
 ## 📞 Contact Information
 
 **Company**: Baba Adhesive  
-**Email**: info@babadhesive.com  
+**Email**: suneja053@gmail.com  
 **Phone**: +91 863 043 4973  
 **Industries Served**: Furniture Manufacturing, Interior Work, Construction, Woodworking, Modular Kitchens, ACP/Laminate Installation
 

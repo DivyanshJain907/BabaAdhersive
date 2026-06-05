@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const siteUrl = "https://www.babadhesive.com";
+const siteUrl = "https://www.babaadhesive.in";
 
 export const metadata: Metadata = {
   title: "Premium Adhesive Products | Panel Fixing, Furniture & Industrial Glue | Baba Adhesive",

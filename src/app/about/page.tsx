@@ -13,7 +13,7 @@ const aboutPageSchema = {
   "publisher": {
     "@type": "Organization",
     "name": "Baba Adhesive",
-    "logo": "https://www.babadhesive.com/logo.png"
+    "logo": "https://www.babaadhesive.in/logo.png"
   }
 };
 
