@@ -84,7 +84,7 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: siteUrl,
     siteName: "Baba Adhesive",
-    title: "Baba Adhesive - Premium Adhesive Supplier in Moradabad | Panel Fixing, Furniture & Industrial Glue",
+    title: "Baba Adhesive",
     description: "High-quality adhesive solutions for construction, furniture, and industrial applications. Buy Panel Fixing Adhesive, Furniture Glue, and Industrial Adhesives from Baba Adhesive in Moradabad.",
     images: [
       {
@@ -97,7 +97,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Baba Adhesive - Premium Adhesive Products | Moradabad",
+    title: "Baba Adhesive",
     description: "High-quality adhesives for construction, furniture, and industrial applications. Panel Fixing, Furniture Glue, Industrial Adhesives from Baba Adhesive.",
     images: ["/logo.png"],
   },
