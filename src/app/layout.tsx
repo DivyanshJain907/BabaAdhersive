@@ -7,10 +7,7 @@ const siteUrl = "https://www.babaadhesive.in";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: {
-    default: "Baba Adhesive",
-    template: "%s | Baba Adhesive",
-  },
+  title: "Baba Adhesive",
   description: "Baba Adhesive is India's trusted adhesive manufacturer in Moradabad. Buy panel fixing adhesive, furniture glue, WPC adhesive, and industrial adhesives. Competitive pricing, fast delivery. Call +91 863 043 4973",
   applicationName: "Baba Adhesive",
   referrer: "origin-when-cross-origin",
