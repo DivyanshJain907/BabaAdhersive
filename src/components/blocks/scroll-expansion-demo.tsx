@@ -29,7 +29,7 @@ const sampleMediaContent: MediaContentCollection = {
       'https://images.unsplash.com/photo-1511884642898-4c92249e20b6?q=80&w=1280&auto=format&fit=crop',
     background:
       '/pannel.jpg',
-    title: 'Baba Adhesive:\nWPC, PVC & Panel Solutions',
+    title: 'BABA ADHESIVE:\nWPC, PVC & PANEL SOLUTIONS',
     date: 'Powerful Bonds, Trusted Results',
     scrollToExpand: 'Scroll to Explore Our Complete Product Range',
     about: {

@@ -224,19 +224,17 @@ const ScrollExpandMedia = ({
   const mediaHeight = 400 + scrollProgress * (isMobileState ? 200 : 400);
   const textTranslateX = scrollProgress * (isMobileState ? 180 : 150);
 
-  // Check if title contains newline
+  const titleLines = title ? title.split('\n') : [];
+  const brandLine = titleLines[0] || '';
+  const productLine = titleLines.slice(1).join('\n');
+  const isBabaHero = brandLine.toUpperCase().includes('BABA ADHESIVE');
+  
   let firstWord = '';
   let restOfTitle = '';
-  
-  if (title) {
-    if (title.includes('\n')) {
-      const parts = title.split('\n');
-      firstWord = parts[0];
-      restOfTitle = parts.slice(1).join('\n');
-    } else {
-      firstWord = title.split(' ')[0];
-      restOfTitle = title.split(' ').slice(1).join(' ');
-    }
+
+  if (!isBabaHero && title) {
+    firstWord = title.split(' ')[0];
+    restOfTitle = title.split(' ').slice(1).join(' ');
   }
 
   return (
@@ -397,27 +395,63 @@ const ScrollExpandMedia = ({
                   textBlend ? 'mix-blend-normal' : 'mix-blend-normal'
                 }`}
               >
-                <motion.h2
-                  className='text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white transition-none drop-shadow-xl leading-tight md:leading-normal'
-                  style={{ 
-                    transform: `translateX(-${textTranslateX}vw)`,
-                    textShadow: '0 6px 20px rgba(0, 0, 0, 0.9), 0 3px 8px rgba(0, 0, 0, 0.7)',
-                    willChange: 'transform'
-                  }}
-                >
-                  {firstWord}
-                </motion.h2>
-                <motion.h2
-                  className='text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-center text-white transition-none drop-shadow-xl leading-tight md:leading-normal'
-                  style={{ 
-                    transform: `translateX(${textTranslateX}vw)`,
-                    textShadow: '0 6px 20px rgba(0, 0, 0, 0.9), 0 3px 8px rgba(0, 0, 0, 0.7)',
-                    whiteSpace: 'pre-wrap',
-                    willChange: 'transform'
-                  }}
-                >
-                  {restOfTitle}
-                </motion.h2>
+                {isBabaHero ? (
+                  <>
+                    <motion.h1
+                      className='text-[2.55rem] sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase italic transition-none drop-shadow-xl leading-none'
+                      style={{
+                        transform: `translateX(-${textTranslateX}vw)`,
+                        fontFamily: 'Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif',
+                        letterSpacing: '0',
+                        WebkitTextStroke: '1px rgba(255, 255, 255, 0.78)',
+                        textShadow: '0 7px 0 rgba(0, 0, 0, 0.85), 0 12px 24px rgba(0, 0, 0, 0.95)',
+                        willChange: 'transform'
+                      }}
+                    >
+                      <span className='text-[#e21717]'>BABA</span>{' '}
+                      <span className='text-white'>ADHESIVE:</span>
+                    </motion.h1>
+                    <motion.h2
+                      className='text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase italic transition-none drop-shadow-xl leading-none'
+                      style={{
+                        transform: `translateX(${textTranslateX}vw)`,
+                        color: '#ffbf24',
+                        fontFamily: 'Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif',
+                        letterSpacing: '0',
+                        WebkitTextStroke: '0.75px rgba(0, 0, 0, 0.55)',
+                        textShadow: '0 5px 0 rgba(0, 0, 0, 0.85), 0 10px 20px rgba(0, 0, 0, 0.9)',
+                        whiteSpace: 'pre-wrap',
+                        willChange: 'transform'
+                      }}
+                    >
+                      {productLine}
+                    </motion.h2>
+                  </>
+                ) : (
+                  <>
+                    <motion.h2
+                      className='text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white transition-none drop-shadow-xl leading-tight md:leading-normal'
+                      style={{ 
+                        transform: `translateX(-${textTranslateX}vw)`,
+                        textShadow: '0 6px 20px rgba(0, 0, 0, 0.9), 0 3px 8px rgba(0, 0, 0, 0.7)',
+                        willChange: 'transform'
+                      }}
+                    >
+                      {firstWord}
+                    </motion.h2>
+                    <motion.h2
+                      className='text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-center text-white transition-none drop-shadow-xl leading-tight md:leading-normal'
+                      style={{ 
+                        transform: `translateX(${textTranslateX}vw)`,
+                        textShadow: '0 6px 20px rgba(0, 0, 0, 0.9), 0 3px 8px rgba(0, 0, 0, 0.7)',
+                        whiteSpace: 'pre-wrap',
+                        willChange: 'transform'
+                      }}
+                    >
+                      {restOfTitle}
+                    </motion.h2>
+                  </>
+                )}
               </div>
             </div>
 

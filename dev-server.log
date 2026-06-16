@@ -1,0 +1,25 @@
+
+> baba-adhesive@0.1.0 dev
+> next dev --hostname 127.0.0.1 --port 3004
+
+   ▲ Next.js 15.5.13
+   - Local:        http://127.0.0.1:3004
+   - Network:      http://127.0.0.1:3004
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 5.5s
+ ○ Compiling / ...
+ ✓ Compiled / in 18s (1368 modules)
+ GET / 200 in 20898ms
+ ✓ Compiled in 3.2s (601 modules)
+ ○ Compiling /api/products ...
+ ✓ Compiled /api/products in 798ms (1358 modules)
+✅ MongoDB connected successfully
+ GET /api/products?featured=true 200 in 2128ms
+ GET / 200 in 641ms
+ ○ Compiling /api/gallery ...
+ ✓ Compiled /api/gallery in 958ms (1361 modules)
+ GET /robots.txt 200 in 1090ms
+ GET /api/gallery 200 in 1168ms
+ GET / 200 in 444ms
