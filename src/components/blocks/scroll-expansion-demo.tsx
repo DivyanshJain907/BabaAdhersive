@@ -26,7 +26,7 @@ const sampleMediaContent: MediaContentCollection = {
   video: {
     src: '/mix.mp4',
     poster:
-      'https://images.unsplash.com/photo-1511884642898-4c92249e20b6?q=80&w=1280&auto=format&fit=crop',
+      '/mix.mp4',
     background:
       '/pannel.jpg',
     title: 'BABA ADHESIVE:\nWPC, PVC & PANEL SOLUTIONS',
@@ -40,7 +40,7 @@ const sampleMediaContent: MediaContentCollection = {
     },
   },
   image: {
-    src: 'https://images.unsplash.com/photo-1556075798-4825dfaaf498?q=80&w=1280&auto=format&fit=crop',
+    src: '/pannel.jpg',
     background:
       '/pannel.jpg',
     title: 'Specialized Industrial Adhesive Range',
