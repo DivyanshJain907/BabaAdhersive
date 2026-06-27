@@ -21,19 +21,19 @@ function Header1() {
             description: "Explore our adhesive product range",
             items: [
                 {
-                    title: "Panel Fixing Adhesive",
+                    title: "Fluted Glue",
                     href: "/products",
                 },
                 {
-                    title: "Furniture Adhesive",
+                    title: "Hot Stamping Glue",
                     href: "/products",
                 },
                 {
-                    title: "Industrial Glue",
+                    title: "WPC Glue",
                     href: "/products",
                 },
                 {
-                    title: "Waterproof Adhesive",
+                    title: "PVC Pannel Glue",
                     href: "/products",
                 },
             ],
